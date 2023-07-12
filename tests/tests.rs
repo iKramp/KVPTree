@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod packet_str_tests {
-    extern crate KVPTree;
-    use KVPTree::*;
+    extern crate kvptree;
+    use kvptree::*;
     use std::collections::HashMap;
 
     #[test]
