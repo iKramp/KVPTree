@@ -80,4 +80,17 @@ mod packet_str_tests {
         let returned_graph = from_packet(to_packet(graph_1.clone())).unwrap();
         assert_eq!(graph_1, returned_graph)
     }
+
+    #[test]
+    fn test_get() {
+        let data_1 = "[ key1 [ key2 [ ] key3 val1 key4 val2 ] key5 val3 key6 [ key7 val4 ] ]"
+            .as_bytes()
+            .to_vec();
+        let graph_1 = from_packet(data_1).unwrap();
+
+        assert_eq!(graph_1.get("key1.key3").unwrap(), "val1".to_owned());
+        assert_eq!(graph_1.get("key5").unwrap(), "val3".to_owned());
+        assert!(graph_1.get("key2").is_err());
+        assert!(graph_1.get("key1").is_err());
+    }
 }

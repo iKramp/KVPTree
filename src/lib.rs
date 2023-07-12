@@ -28,6 +28,26 @@ impl PartialEq for ValueType {
     }
 }
 
+impl ValueType {
+    pub fn get(&self, path: &str) -> Result<String> {
+        if path == "" {
+            if let ValueType::STRING(val) = self {
+                return Ok(val.clone().to_owned());
+            } else {
+                return Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+            }
+        }
+        let parts = path.split_once('.').unwrap_or((path, ""));
+
+        if let ValueType::LIST(map) = self {
+            let value = map.get(parts.0).ok_or(anyhow::anyhow!("error"))?;
+            return value.get(parts.1)
+        } else {
+            return Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+        }
+    }
+}
+
 pub fn from_packet(data: Vec<u8>) -> Result<ValueType> {
     let data = String::from_utf8(data)?;
     let data: Vec<&str> = data.split(' ').collect();
