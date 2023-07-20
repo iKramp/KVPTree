@@ -57,7 +57,7 @@ mod packet_str_tests {
                     ),
                     (
                         "key3".to_owned(),
-                        ValueType::STRING("val1 val1".to_owned()),
+                        ValueType::STRING("val1 \\ val1".to_owned()),
                     ),
                     (
                         "key4".to_owned(),

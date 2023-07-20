@@ -114,6 +114,7 @@ fn parse_list(data: &[String]) -> Result<(usize, HashMap<String, ValueType>)> {
             map.insert(key.to_owned(), ValueType::LIST(val));
             index += 1 + i;
         } else {
+            let value = value.replace("\\s", "\\");
             map.insert(key.to_owned(), ValueType::STRING(value.to_owned()));
         }
         index += 1;
