@@ -67,7 +67,7 @@ impl ValueType {
     }
 }
 
-pub fn from_packet(data: Vec<u8>) -> Result<ValueType> {
+pub fn from_string(data: Vec<u8>) -> Result<ValueType> {
     let data = String::from_utf8(data)?;
     let data: Vec<String> = split_string(data);
     let (_, map) = parse_list(&data.get(1..).unwrap())?;
@@ -122,7 +122,7 @@ fn parse_list(data: &[String]) -> Result<(usize, HashMap<String, ValueType>)> {
     Ok((index, map))
 }
 
-pub fn to_packet(data: ValueType) -> Vec<u8> {
+pub fn to_string(data: ValueType) -> Vec<u8> {
     if let ValueType::LIST(map) = data {
         let string = write_list(map);
         string.into_bytes()

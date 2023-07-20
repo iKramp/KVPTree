@@ -5,11 +5,11 @@ mod packet_str_tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_get_from_packet_str() {
+    fn test_get_from_str() {
         let data_1 = "[ key1 [ key2 [ ] key3 \\\"val1 val1\\\" key4 val2 ] key5 val3 key6 [ key7 val4 ] ]"
             .as_bytes()
             .to_vec();
-        let graph_1 = from_packet(data_1).unwrap();
+        let graph_1 = from_string(data_1).unwrap();
         let graph_2 = ValueType::LIST(HashMap::from([
             (
                 "key1".to_owned(),
@@ -77,8 +77,8 @@ mod packet_str_tests {
                 )])),
             ),
             ]));
-        let string = to_packet(graph_1.clone());
-        let returned_graph = from_packet(string).unwrap();
+        let string = to_string(graph_1.clone());
+        let returned_graph = from_string(string).unwrap();
         assert_eq!(graph_1, returned_graph)
     }
 
@@ -87,7 +87,7 @@ mod packet_str_tests {
         let data_1 = "[ key1 [ key2 [ ] key3 \\\"val1 val1\\\" key4 val2 ] key5 val3 key6 [ key7 val4 ] ]"
             .as_bytes()
             .to_vec();
-        let graph_1 = from_packet(data_1).unwrap();
+        let graph_1 = from_string(data_1).unwrap();
 
         assert_eq!(graph_1.get_str("key1.key3").unwrap(), "val1 val1".to_owned());
         assert_eq!(graph_1.get_str("key5").unwrap(), "val3".to_owned());
@@ -101,7 +101,7 @@ mod packet_str_tests {
         let data_1 = "[ key1 [ key2 [ ] key3 \\\"val1 val1\\\" key4 val2 ] key5 val3 key6 [ key7 val4 ] ]"
             .as_bytes()
             .to_vec();
-        let graph_1 = from_packet(data_1).unwrap();
+        let graph_1 = from_string(data_1).unwrap();
 
         assert_eq!(graph_1.get_node("key1.key2").unwrap(), ValueType::LIST(HashMap::new()));
         assert_eq!(graph_1.get_node("key6").unwrap(), ValueType::LIST(HashMap::from([("key7".to_owned(), ValueType::STRING("val4".to_owned()))])));
