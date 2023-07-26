@@ -75,28 +75,22 @@ pub fn from_byte_vec(data: Vec<u8>) -> Result<ValueType> {
     Ok(ValueType::LIST(map))
 }
 
-fn split_string(val: String) -> Vec<String> {
-    let parts: Vec<&str> = val.split("\\\"").collect();
-    let mut parts_fixed = Vec::new();
-    for (i, &part) in parts.iter().enumerate() {
-        if i % 2 == 1 {//it's a string so we leave it as it is
-            parts_fixed.push(part.to_owned());
+fn split_string(mut val: String) -> Vec<String> {
+    let mut parts: Vec<String> = Vec::new();
+    while val.len() > 0 {
+        let (part, rest) = val.split_once(' ').unwrap_or((val.as_str(), ""));
+        if part == "[" || part == "]" {
+            parts.push(part.to_owned());
+            val = rest.to_owned();
             continue;
         }
-        let mut temp_vec: Vec<String> = part.split(' ').collect::<Vec<&str>>().into_iter().map(|s| s.to_string()).collect();
-        let start = if temp_vec.first().unwrap() == &"".to_owned() {
-            1
-        } else {
-            0
-        };
-        if temp_vec.last().unwrap() == &"".to_owned() {
-            temp_vec.pop();
-        }
-        parts_fixed.append(&mut temp_vec.get(start..).unwrap().to_vec());
-        let copied = parts_fixed.clone();
-        //dbg!(copied);
+        let str_len = part.parse::<usize>().unwrap();
+        let (part, rest) = rest.split_at(str_len);
+        parts.push(part.to_owned());
+        val = rest.trim().to_owned();
     }
-    parts_fixed
+
+    parts
 }
 
 fn parse_list(data: &[String]) -> Result<(usize, HashMap<String, ValueType>)> {
@@ -114,7 +108,6 @@ fn parse_list(data: &[String]) -> Result<(usize, HashMap<String, ValueType>)> {
             map.insert(key.to_owned(), ValueType::LIST(val));
             index += 1 + i;
         } else {
-            let value = value.replace("\\s", "\\");
             map.insert(key.to_owned(), ValueType::STRING(value.to_owned()));
         }
         index += 1;
@@ -135,23 +128,22 @@ pub fn to_byte_vec(data: ValueType) -> Vec<u8> {
 fn write_list(map: HashMap<String, ValueType>) -> String {
     let mut string = "[".to_owned();
     for element in map {
-        if element.0.contains(" ") {
-            panic!("a key shouldn't contain spaces");
-        }
-        string.push(' ');
-        string.push_str(&element.0);
-        string.push(' ');
+        string.push_str(&format!(
+            " {} {} ",
+            element.0.len(),
+            element.0
+        ));
         match element.1 {
             ValueType::STRING(value) => {
-                string.push_str(&format!("\\\"{}\\\"", prepare_string_for_writing(value)));
+                string.push_str(&format!(
+                    "{} {}",
+                    value.len(),
+                    value
+                ));
             }
             ValueType::LIST(map) => string.push_str(&write_list(map)),
         }
     }
     string.push_str(" ]");
     string
-}
-
-fn prepare_string_for_writing(val: String) -> String {
-    val.replace("\\", "\\s")//we convert \ to \s so we can use our own backslashes safely later
 }
