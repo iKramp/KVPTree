@@ -108,4 +108,14 @@ mod packet_str_tests {
         assert!(graph_1.get_node("key1.key3").is_err());
         assert!(graph_1.get_node("key5").is_err());
     }
+
+    #[test]
+    fn test_display() {
+        let data_1 = "[ 4 key1 [ 4 key2 [ ] 4 key3 13 \\\"val1 val1\\\" 4 key4 4 val2 ] 4 key5 4 val3 4 key6 [ 4 key7 4 val4 ] ]"
+            .as_bytes()
+            .to_vec();
+        let graph_1 = from_byte_vec(data_1).unwrap();
+        let display = format!("{}", graph_1);
+        println!("{}", display);//always passes, just for visual inspection
+    }
 }

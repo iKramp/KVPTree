@@ -1,5 +1,6 @@
 use anyhow::Result;
 use std::collections::HashMap;
+use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub enum ValueType {
@@ -146,4 +147,20 @@ fn write_list(map: HashMap<String, ValueType>) -> String {
     }
     string.push_str(" ]");
     string
+}
+
+impl Display for ValueType {//make this nicer
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ValueType::STRING(val) => write!(f, "{}", val),
+            ValueType::LIST(map) => {
+                writeln!(f, "[")?;
+                for (key, value) in map {
+                    write!(f, "{} ", key)?;
+                    writeln!(f, "{}", value)?;
+                }
+                writeln!(f, " ]")
+            }
+        }
+    }
 }
