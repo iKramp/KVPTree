@@ -14,24 +14,15 @@ mod packet_str_tests {
             (
                 "key1".to_owned(),
                 ValueType::LIST(HashMap::from([
-                    (
-                        "key2".to_owned(),
-                        ValueType::LIST(HashMap::new()),
-                    ),
+                    ("key2".to_owned(), ValueType::LIST(HashMap::new())),
                     (
                         "key3".to_owned(),
                         ValueType::STRING("\\\"val1 val1\\\"".to_owned()),
                     ),
-                    (
-                        "key4".to_owned(),
-                        ValueType::STRING("val2".to_owned()),
-                    ),
-                    ])),
+                    ("key4".to_owned(), ValueType::STRING("val2".to_owned())),
+                ])),
             ),
-            (
-                "key5".to_owned(),
-                ValueType::STRING("val3".to_owned()),
-            ),
+            ("key5".to_owned(), ValueType::STRING("val3".to_owned())),
             (
                 "key6".to_owned(),
                 ValueType::LIST(HashMap::from([(
@@ -39,7 +30,7 @@ mod packet_str_tests {
                     ValueType::STRING("val4".to_owned()),
                 )])),
             ),
-            ]));
+        ]));
         assert_eq!(graph_1, graph_2)
     }
 
@@ -51,24 +42,15 @@ mod packet_str_tests {
             (
                 "key1".to_owned(),
                 ValueType::LIST(HashMap::from([
-                    (
-                        "key2".to_owned(),
-                        ValueType::LIST(HashMap::new()),
-                    ),
+                    ("key2".to_owned(), ValueType::LIST(HashMap::new())),
                     (
                         "key3".to_owned(),
                         ValueType::STRING("val1 \\ val1".to_owned()),
                     ),
-                    (
-                        "key4".to_owned(),
-                        ValueType::STRING("val2".to_owned()),
-                    ),
-                    ])),
+                    ("key4".to_owned(), ValueType::STRING("val2".to_owned())),
+                ])),
             ),
-            (
-                "key5".to_owned(),
-                ValueType::STRING("val3".to_owned()),
-            ),
+            ("key5".to_owned(), ValueType::STRING("val3".to_owned())),
             (
                 "key6".to_owned(),
                 ValueType::LIST(HashMap::from([(
@@ -76,7 +58,7 @@ mod packet_str_tests {
                     ValueType::STRING("val4".to_owned()),
                 )])),
             ),
-            ]));
+        ]));
         let byte_vec = to_byte_vec(graph_1.clone());
         let returned_graph = from_byte_vec(byte_vec).unwrap();
         assert_eq!(graph_1, returned_graph)
@@ -89,7 +71,10 @@ mod packet_str_tests {
             .to_vec();
         let graph_1 = from_byte_vec(data_1).unwrap();
 
-        assert_eq!(graph_1.get_str("key1.key3").unwrap(), "\\\"val1 val1\\\"".to_owned());
+        assert_eq!(
+            graph_1.get_str("key1.key3").unwrap(),
+            "\\\"val1 val1\\\"".to_owned()
+        );
         assert_eq!(graph_1.get_str("key5").unwrap(), "val3".to_owned());
         assert!(graph_1.get_str("key2").is_err());
         assert!(graph_1.get_str("key1").is_err());
@@ -103,8 +88,17 @@ mod packet_str_tests {
             .to_vec();
         let graph_1 = from_byte_vec(data_1).unwrap();
 
-        assert_eq!(graph_1.get_node("key1.key2").unwrap(), ValueType::LIST(HashMap::new()));
-        assert_eq!(graph_1.get_node("key6").unwrap(), ValueType::LIST(HashMap::from([("key7".to_owned(), ValueType::STRING("val4".to_owned()))])));
+        assert_eq!(
+            graph_1.get_node("key1.key2").unwrap(),
+            ValueType::LIST(HashMap::new())
+        );
+        assert_eq!(
+            graph_1.get_node("key6").unwrap(),
+            ValueType::LIST(HashMap::from([(
+                "key7".to_owned(),
+                ValueType::STRING("val4".to_owned())
+            )]))
+        );
         assert!(graph_1.get_node("key1.key3").is_err());
         assert!(graph_1.get_node("key5").is_err());
     }
@@ -116,6 +110,6 @@ mod packet_str_tests {
             .to_vec();
         let graph_1 = from_byte_vec(data_1).unwrap();
         let display = format!("{}", graph_1);
-        println!("{}", display);//always passes, just for visual inspection
+        println!("{}", display); //always passes, just for visual inspection
     }
 }

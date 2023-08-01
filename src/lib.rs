@@ -35,8 +35,10 @@ impl ValueType {
             return if let ValueType::STRING(val) = self {
                 Ok(val.to_owned())
             } else {
-                Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
-            }
+                Err(anyhow::anyhow!(
+                    "error: query doesn't match the graph structure"
+                ))
+            };
         }
         let parts = path.split_once('.').unwrap_or((path, ""));
 
@@ -44,7 +46,9 @@ impl ValueType {
             let value = map.get(parts.0).ok_or(anyhow::anyhow!("error"))?;
             value.get_str(parts.1)
         } else {
-            Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+            Err(anyhow::anyhow!(
+                "error: query doesn't match the graph structure"
+            ))
         }
     }
 
@@ -54,8 +58,10 @@ impl ValueType {
             return if let ValueType::LIST(_) = self {
                 Ok(self.clone())
             } else {
-                Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
-            }
+                Err(anyhow::anyhow!(
+                    "error: query doesn't match the graph structure"
+                ))
+            };
         }
         let parts = path.split_once('.').unwrap_or((path, ""));
 
@@ -63,7 +69,9 @@ impl ValueType {
             let value = map.get(parts.0).ok_or(anyhow::anyhow!("error"))?;
             value.get_node(parts.1)
         } else {
-            Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+            Err(anyhow::anyhow!(
+                "error: query doesn't match the graph structure"
+            ))
         }
     }
 }
@@ -129,18 +137,10 @@ pub fn to_byte_vec(data: ValueType) -> Vec<u8> {
 fn write_list(map: HashMap<String, ValueType>) -> String {
     let mut string = "[".to_owned();
     for element in map {
-        string.push_str(&format!(
-            " {} {} ",
-            element.0.len(),
-            element.0
-        ));
+        string.push_str(&format!(" {} {} ", element.0.len(), element.0));
         match element.1 {
             ValueType::STRING(value) => {
-                string.push_str(&format!(
-                    "{} {}",
-                    value.len(),
-                    value
-                ));
+                string.push_str(&format!("{} {}", value.len(), value));
             }
             ValueType::LIST(map) => string.push_str(&write_list(map)),
         }
@@ -169,7 +169,8 @@ fn write_tree(node: ValueType, f: &mut std::fmt::Formatter<'_>, depth: usize) ->
     }
 }
 
-impl Display for ValueType {//make this nicer
+impl Display for ValueType {
+    //make this nicer
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write_tree(self.clone(), f, 0)
     }
