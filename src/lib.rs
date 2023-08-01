@@ -159,7 +159,6 @@ fn write_tree(node: ValueType, f: &mut std::fmt::Formatter<'_>, depth: usize) ->
                     write!(f, "  ")?;
                 }
                 write!(f, "  {} ", key)?;
-                /*writeln!(f, "{}", value)?;*/
                 write_tree(value, f, depth + 1)?;
             }
             for _ in 0..depth {
