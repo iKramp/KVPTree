@@ -149,18 +149,29 @@ fn write_list(map: HashMap<String, ValueType>) -> String {
     string
 }
 
+fn write_tree(node: ValueType, f: &mut std::fmt::Formatter<'_>, depth: usize) -> std::fmt::Result {
+    match node {
+        ValueType::STRING(val) => writeln!(f, "{}", val),
+        ValueType::LIST(map) => {
+            writeln!(f, "[")?;
+            for (key, value) in map {
+                for _ in 0..depth {
+                    write!(f, "  ")?;
+                }
+                write!(f, "  {} ", key)?;
+                /*writeln!(f, "{}", value)?;*/
+                write_tree(value, f, depth + 1)?;
+            }
+            for _ in 0..depth {
+                write!(f, "  ")?;
+            }
+            writeln!(f, "]")
+        }
+    }
+}
+
 impl Display for ValueType {//make this nicer
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ValueType::STRING(val) => write!(f, "{}", val),
-            ValueType::LIST(map) => {
-                writeln!(f, "[")?;
-                for (key, value) in map {
-                    write!(f, "{} ", key)?;
-                    writeln!(f, "{}", value)?;
-                }
-                writeln!(f, " ]")
-            }
-        }
+        write_tree(self.clone(), f, 0)
     }
 }
