@@ -31,39 +31,39 @@ impl PartialEq for ValueType {
 
 impl ValueType {
     pub fn get_str(&self, path: &str) -> Result<String> {
-        if path == "" {
-            if let ValueType::STRING(val) = self {
-                return Ok(val.clone().to_owned());
+        if path.is_empty() {
+            return if let ValueType::STRING(val) = self {
+                Ok(val.to_owned())
             } else {
-                return Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+                Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
             }
         }
         let parts = path.split_once('.').unwrap_or((path, ""));
 
         if let ValueType::LIST(map) = self {
             let value = map.get(parts.0).ok_or(anyhow::anyhow!("error"))?;
-            return value.get_str(parts.1)
+            value.get_str(parts.1)
         } else {
-            return Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+            Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
         }
     }
 
     ///always returns the list type but it is kept wrapped in `ValueType` so you can still use the .get_str and .get_node methods
     pub fn get_node(&self, path: &str) -> Result<ValueType> {
-        if path == "" {
-            if let ValueType::LIST(_) = self {
-                return Ok(self.clone());
+        if path.is_empty() {
+            return if let ValueType::LIST(_) = self {
+                Ok(self.clone())
             } else {
-                return Err(anyhow::anyhow!("error: query doesn't match the graph structure"));
+                Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
             }
         }
         let parts = path.split_once('.').unwrap_or((path, ""));
 
         if let ValueType::LIST(map) = self {
             let value = map.get(parts.0).ok_or(anyhow::anyhow!("error"))?;
-            return value.get_node(parts.1)
+            value.get_node(parts.1)
         } else {
-            return Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
+            Err(anyhow::anyhow!("error: query doesn't match the graph structure"))
         }
     }
 }
@@ -71,14 +71,14 @@ impl ValueType {
 pub fn from_byte_vec(data: Vec<u8>) -> Result<ValueType> {
     let data = String::from_utf8(data)?;
     let data: Vec<String> = split_string(data);
-    let (_, map) = parse_list(&data.get(1..).unwrap())?;
+    let (_, map) = parse_list(data.get(1..).unwrap())?;
 
     Ok(ValueType::LIST(map))
 }
 
 fn split_string(mut val: String) -> Vec<String> {
     let mut parts: Vec<String> = Vec::new();
-    while val.len() > 0 {
+    while !val.is_empty() {
         let (part, rest) = val.split_once(' ').unwrap_or((val.as_str(), ""));
         if part == "[" || part == "]" {
             parts.push(part.to_owned());
