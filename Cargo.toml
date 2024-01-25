@@ -2,6 +2,9 @@
 name = "kvptree"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+description = "a lightweight library for sending data around"
+repository = "https://github.com/iKramp/KVPTree"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
